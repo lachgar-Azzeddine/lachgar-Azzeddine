@@ -115,6 +115,11 @@ for k, i in enumerate((0, n // 2, n - 1)):
     axis.append(d)
 
 last_x, last_y = px(n - 1), py(total[-1])
+import datetime as _dt
+_end = _dt.datetime.fromtimestamp(trace["start"] + (n - 1) * trace["step"], _dt.UTC)
+now_d, now_w = text(mono_bold, f"{total[-1]:.2f} W", 15, last_x - 14, last_y - 16, anchor="end")
+nowl_d, _ = text(mono, "now", 11, last_x - 14 - now_w - 8, last_y - 16, anchor="end")
+stamp_d, _ = text(mono, "UPDATED " + _end.strftime("%d %b %Y").upper(), 12, RIGHT, 52, tracking=1.2, anchor="end")
 
 THEMES = {
     "light": dict(paper="#f6f5f1", grid="#e7e4dc", major="#d8d4ca", ink="#111418", muted="#6b7079",
@@ -140,6 +145,7 @@ for theme, c in THEMES.items():
   .area {{ opacity: 0; animation: show .9s ease 3s forwards; }}
   .tenant {{ opacity: 0; animation: show .9s ease 2.4s forwards; }}
   .event {{ opacity: 0; animation: show .7s ease 1.9s forwards; }}
+  .now {{ opacity: 0; animation: show .5s ease 3.6s forwards; }}
   .pen {{ opacity: 0; animation: show .3s ease 3.4s forwards, pulse 1.8s ease-in-out 3.7s infinite; transform-origin: {last_x:.1f}px {last_y:.1f}px; }}
   .rec {{ animation: blink 1.6s steps(2, start) infinite; }}
   @keyframes draw {{ to {{ stroke-dashoffset: 0; }} }}
@@ -148,7 +154,7 @@ for theme, c in THEMES.items():
   @keyframes blink {{ to {{ visibility: hidden; }} }}
   @media (prefers-reduced-motion: reduce) {{
     .trace {{ animation: none; stroke-dashoffset: 0; }}
-    .area, .tenant, .event, .pen {{ animation: none; opacity: 1; }}
+    .area, .tenant, .event, .pen, .now {{ animation: none; opacity: 1; }}
     .rec {{ animation: none; }}
   }}
 </style>
@@ -160,6 +166,7 @@ for theme, c in THEMES.items():
   <circle class="rec" cx="{LEFT + 5}" cy="48" r="5" fill="{c["charge"]}"/>
   <path d="{rec_d}" fill="{c["charge"]}"/>
   <path d="{eyebrow_d}" fill="{c["muted"]}"/>
+  <path d="{stamp_d}" fill="{c["muted"]}"/>
   <path d="{name_d}" fill="{c["ink"]}"/>
   <path d="{sub_d}" fill="{c["muted"]}"/>
 
@@ -175,6 +182,7 @@ for theme, c in THEMES.items():
   <path class="area" d="{area}" fill="{c["charge_soft"]}"/>
   <path class="tenant" d="{tenant_d}" fill="none" stroke="{c["asleep_line"]}" stroke-width="1.3" stroke-dasharray="4 4"/>
   <path class="trace" d="{line}" pathLength="1" fill="none" stroke="{c["charge"]}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <g class="now"><path d="{now_d}" fill="{c["charge"]}"/><path d="{nowl_d}" fill="{c["muted"]}"/></g>
   <circle class="pen" cx="{last_x:.1f}" cy="{last_y:.1f}" r="5" fill="{c["charge"]}"/>
 
   <line x1="{LEFT}" x2="{RIGHT}" y1="{BOTTOM}" y2="{BOTTOM}" stroke="{c["ink"]}" stroke-width="1"/>
